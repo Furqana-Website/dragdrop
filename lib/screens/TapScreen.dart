@@ -24,7 +24,7 @@ class TapImageScreen extends StatefulWidget {
 
 class _TapImageScreenState extends State<TapImageScreen> {
   bool isTab=false;
-  // Map<int, String> caughtImages = {};
+  Map<int, String> caughtImages = {};
   final GameDataModel dataList;
   bool _isTargetOccupied=false;
   int selectedIndex=-1;
@@ -336,7 +336,7 @@ class _TapImageScreenState extends State<TapImageScreen> {
                                         // padding: isTab?const EdgeInsets.all(40):EdgeInsets.all(15),
                                         child: ClipRect(
                                           child: Center(
-                                            child: sele.containsKey(index)?Image.asset(caughtImages[index]!,
+                                            child: caughtImages.containsKey(index)?Image.asset(caughtImages[index]!,
                                               width: isTab?120:106.0,
                                               height:isTab?120:106.0,
                                               fit: BoxFit.fitWidth,
