@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:dragdrop/model/memoryGame.dart';
 import 'package:dragdrop/model/user_model.dart';
 import 'package:dragdrop/screens/TimeUpNew.dart';
 import 'package:dragdrop/screens/WinScreen.dart';
@@ -28,6 +29,7 @@ class _TapImageScreenState extends State<TapImageScreen> {
   final GameDataModel dataList;
   bool _isTargetOccupied=false;
   int selectedIndex=-1;
+  List<String> occupiedDestinations = [];
 
   _TapImageScreenState(this.dataList, this.emptyList,this.currentIndex);
 
@@ -44,6 +46,7 @@ class _TapImageScreenState extends State<TapImageScreen> {
   String textContent = 'Hello, Flutter!';
   bool showWinDialog = false;
   bool showTextView = false;
+  List<String> targetList = [];
 
   void navigateToNextScreen() {
     int currentdata=currentIndex;
@@ -134,18 +137,18 @@ class _TapImageScreenState extends State<TapImageScreen> {
   bool showSuccessDialog=false;
   @override
   Widget build(BuildContext context) {
-     isTab=ScreenUtilClass().getIsTab(context);
-     print("EmptyData");
-     print(emptyList);
+    isTab=ScreenUtilClass().getIsTab(context);
+    print("EmptyData");
+    print(emptyList);
 
     return WillPopScope(
 
       onWillPop: () async {
-       return true;
+        return true;
       },
       child: Scaffold(
-           backgroundColor: Color(0xFF6555C0),
-      body: SafeArea(
+        backgroundColor: Color(0xFF6555C0),
+        body: SafeArea(
           child: Container(
             padding:isTab?const EdgeInsets.only(left: 30,right: 30,top: 30,bottom: 0):const EdgeInsets.only(left: 10,right: 20,top: 20,bottom: 30),
 
@@ -246,109 +249,107 @@ class _TapImageScreenState extends State<TapImageScreen> {
                       itemCount: dataList!.data![currentIndex].correctAnswer!.split(",").length,
                       itemBuilder: (context, index) {
 
-                        return DragTarget<int>(
-                            onAccept: (data) {
-                              setState(() {
-                                stopAudio();
-                                playAudio("assets/mp3/Click.mp3");
-                                 selectedIndex=data;
-                                  if(selectedIndex==emptyList[index])
-                                  {
-                                    successCount++;
-                                    print("successCount $successCount");
-                                  }
-                                  else
-                                  {
-                                    widget.dataList.data![currentIndex].options![count].isError = true;
-
-                                  }
-                                  // dataList[currentIndex].options[count].image = image.image;
-                                  widget.dataList.data![currentIndex].options![count].isCorrect = true;
-                                  count++;
-
-                              });
-                              if (successCount==widget.dataList.data![currentIndex].correctAnswer!.split(',').length) {
-
-                                stopAudio();
-                                playAudio('assets/mp3/Right.mp3');
-                                Future.delayed(
-                                  Duration.zero,
-                                      () =>
-                                      showDialog(
-                                          context: context,
-                                          builder: (context) => WinDialog()),
-                                );
-                                Timer(const Duration(seconds: 2), () {
-                                  Navigator.of(context).pop();
-                                  setState(() {
-                                    showListView = false;
-                                    navigateToNextScreen();
-                                  });
-                                });
-
-
-
-                              }
-                              else if(widget.dataList!.data![currentIndex].correctAnswer!.split(',').length==count)
+                        return DragTarget<String>(
+                          onAccept: (data) {
+                            setState(() {
+                              stopAudio();
+                              playAudio("assets/mp3/Click.mp3");
+                              caughtImages[index] = data;
+                              targetList.add(data);
+                              occupiedDestinations.add(targetList[index]);
+                              if(caughtImages[index]==emptyList[index])
                               {
-                                stopAudio();
-                                playAudio('assets/mp3/Wrong.mp3');
-                                isChangeImage=true;
-                                showListView = false;
-                                navigateToCorrectScreen();
+                                successCount++;
+                                print("successCount $successCount");
+                              }
+                              else
+                              {
+                                widget.dataList.data![currentIndex].options![count].isError = true;
 
                               }
-                            },
-                            builder: (
-                                BuildContext context,
-                                List<dynamic> accepted,
-                                List<dynamic> rejected,
-                                ) {
-                              return
-                                Container(
-                                    margin:isTab?const EdgeInsets.only(left: 10, right: 10,top: 10):const EdgeInsets.only(left: 20, right: 20,top: 0),
-                                    padding: isTab ? const EdgeInsets.only(right: 40):const EdgeInsets.all(0),
-                                    height:isTab?180:111,
-                                    width:isTab?180:111,
-                                    alignment: Alignment.center,
-                                    decoration:BoxDecoration(
-                                      image: DecorationImage(
-                                          // image: AssetImage(caughtImages.containsKey(index)?'assets/newUi/innerimage.png':'assets/newUi/tap.png'),
+                              // dataList[currentIndex].options[count].image = image.image;
+                              widget.dataList.data![currentIndex].options![count].isCorrect = true;
+                              count++;
+                            });
+                            if (successCount==widget.dataList.data![currentIndex].correctAnswer!.split(',').length) {
 
-                                          // image: AssetImage(caughtImages.containsKey(index)?widget.dataList.data![0].options![index].isError?'assets/newUi/wrongimage.png':'assets/newUi/correctimage.png':widget.dataList.data![0].options![index].isCorrect?'assets/newUi/innerimage.png':'assets/newUi/tap.png'),
-                                          image: AssetImage(
-                                              caughtImages.containsKey(index)?(widget.dataList.data![currentIndex].correctAnswer!.split(",").length!=count)?'assets/newUi/innerimage.png':
-                                           (count==widget.dataList.data![currentIndex].correctAnswer!.split(",").length&&widget.dataList.data![currentIndex].options![index].isError)?'assets/newUi/wrongimage.png':"assets/newUi/correctimage.png"
-                                              // ?(count==widget.dataList.data![currentIndex].correctAnswer!.split(",").length&&widget.dataList.data![currentIndex].options![index].isCorrect)?'assets/newUi/correctimage.png':
-                                              // 'assets/newUi/innerimage.png'
-                                                  :'assets/newUi/tap.png'
-                                          ),
+                              stopAudio();
+                              playAudio('assets/mp3/Right.mp3');
+                              Future.delayed(
+                                Duration.zero,
+                                    () =>
+                                    showDialog(
+                                        context: context,
+                                        builder: (context) => WinDialog()),
+                              );
+                              Timer(const Duration(seconds: 2), () {
+                                Navigator.of(context).pop();
+                                setState(() {
+                                  showListView = false;
+                                  navigateToNextScreen();
+                                });
+                              });
 
-                                          fit: BoxFit.fitWidth
-                                      ),
+
+
+                            }
+                            else if(widget.dataList!.data![currentIndex].correctAnswer!.split(',').length==count)
+                            {
+                              stopAudio();
+                              playAudio('assets/mp3/Wrong.mp3');
+                              isChangeImage=true;
+                              showListView = false;
+                              navigateToCorrectScreen();
+
+                            }
+                          },
+                          builder: (
+                              BuildContext context,
+                              List<dynamic> accepted,
+                              List<dynamic> rejected,
+                              ) {
+                            return
+                              Container(
+
+                                  margin:isTab?const EdgeInsets.only(left: 10, right: 10,top: 10):const EdgeInsets.only(left: 20, right: 20,top: 0),
+                                  padding: isTab ? const EdgeInsets.only(right: 40):const EdgeInsets.all(0),
+                                  height:isTab?180:111,
+                                  width:isTab?180:111,
+                                  alignment: Alignment.center,
+                                  decoration:BoxDecoration(
+                                    image: DecorationImage(
+                                        image: AssetImage(
+                                            caughtImages.containsKey(index)?(widget.dataList.data![currentIndex].correctAnswer!.split(",").length!=count)?'assets/newUi/innerimage.png':
+                                            (count==widget.dataList.data![currentIndex].correctAnswer!.split(",").length&&widget.dataList.data![currentIndex].options![index].isError)?'assets/newUi/wrongimage.png':"assets/newUi/correctimage.png"
+                                                :'assets/newUi/tap.png'
+
+                                        ),
+
+                                        fit: BoxFit.fitWidth
                                     ),
+                                  ),
 
-                                    child:Center(
+                                  child:Center(
 
-                                      child: Container(
-                                        alignment: Alignment.center,
-                                        padding: isTab?const EdgeInsets.only(left:40,right: 10,top:10,bottom: 10):const EdgeInsets.all(30),
-                                        // padding: isTab?const EdgeInsets.all(40):EdgeInsets.all(15),
-                                        child: ClipRect(
-                                          child: Center(
-                                            child: caughtImages.containsKey(index)?Image.asset(caughtImages[index]!,
-                                              width: isTab?120:106.0,
-                                              height:isTab?120:106.0,
-                                              fit: BoxFit.fitWidth,
-                                            ):null,
+                                    child: Container(
+                                      alignment: Alignment.center,
+                                      padding: isTab?const EdgeInsets.only(left:40,right: 10,top:10,bottom: 10):const EdgeInsets.all(30),
+                                      // padding: isTab?const EdgeInsets.all(40):EdgeInsets.all(15),
+                                      child: ClipRect(
+                                        child: Center(
+                                          child:caughtImages.containsKey(index)?Image.asset(caughtImages[index]!,
+                                            width: isTab?120:106.0,
+                                            height:isTab?120:106.0,
+                                            fit: BoxFit.fitWidth,
+                                          ):null,
 
-                                          ),
                                         ),
                                       ),
-                                    )
-                                );
-                            },
-                          );
+                                    ),
+                                  )
+                              );
+                          },
+                        );
                       },
                     ),
                   ),
@@ -383,7 +384,7 @@ class _TapImageScreenState extends State<TapImageScreen> {
           child: ListView.builder(
             shrinkWrap: true,
             scrollDirection: Axis.horizontal,
-            itemCount: widget.dataList.data![currentIndex].options!.length,
+            itemCount: length,
             itemBuilder: (context, index) {
 
 
@@ -393,53 +394,54 @@ class _TapImageScreenState extends State<TapImageScreen> {
                   {
                     print("Onclick $index");
                   },
-                  child: Draggable<int>(
+                  child: Draggable<String>(
 
-                        data: selectedIndex,
-                        onDraggableCanceled: (velocity, offset) {
+                      data: widget.dataList.data![currentIndex].options![index].image.toString(),
+                      onDraggableCanceled: (velocity, offset) {
 
-                        },
-                        feedback: Container(
-                          margin: EdgeInsets.only(left: 25),
-                          alignment: Alignment.center,
-                          width:130,
-                          height:MediaQuery.sizeOf(context).height*0.23,
-                          decoration: BoxDecoration(
-                            image: DecorationImage(
-                              image: AssetImage('assets/newUi/innerimage.png'),
-                            ),
+                      },
+                      feedback: Container(
+                        margin: EdgeInsets.only(left: 25),
+                        alignment: Alignment.center,
+                        width:130,
+                        height:MediaQuery.sizeOf(context).height*0.23,
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                            image: AssetImage('assets/newUi/innerimage.png'),
                           ),
-                          child: AnimatedContainer(
-                            padding:const EdgeInsets.all(20),
-                            duration: const Duration(milliseconds: 500),
-                            child: ClipRect(
-                              child: Center(
-                                child: Image.asset(widget.dataList.data![currentIndex].options![index].image.toString(),
-                                  width: isTab?115:70.0,
-                                  height: isTab?MediaQuery.sizeOf(context).height*.23:106.0,
+                        ),
+                        child: AnimatedContainer(
+                          padding:const EdgeInsets.all(20),
+                          duration: const Duration(milliseconds: 500),
+                          child: ClipRect(
+                            child: Center(
+                              child: Image.asset(widget.dataList.data![currentIndex].options![index].image.toString(),
+                                width: isTab?115:70.0,
+                                height: isTab?MediaQuery.sizeOf(context).height*.23:106.0,
 
-                                ),
                               ),
                             ),
                           ),
                         ),
-                        child:Container(
-                          padding: EdgeInsets.all(20),
-                          margin: EdgeInsets.only(left: 25),
-                          alignment: Alignment.center,
-                          width: 130,
-                          height:MediaQuery.sizeOf(context).height*0.23,
-                          decoration: BoxDecoration(
-                            image: DecorationImage(
-                              image: AssetImage('assets/newUi/innerimage.png'),
-                            ),
-                          ),
-                          child:Image.asset(widget.dataList.data![currentIndex].options![index].image.toString(),
-                            width: isTab?115:70.0,
-                            height: isTab?MediaQuery.sizeOf(context).height*.23:106.0,
-                          ),
-                        )
                       ),
+                      childWhenDragging: Container(),
+                      child:Container(
+                        padding: EdgeInsets.all(20),
+                        margin: EdgeInsets.only(left: 25),
+                        alignment: Alignment.center,
+                        width: 130,
+                        height:MediaQuery.sizeOf(context).height*0.23,
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                            image: AssetImage('assets/newUi/innerimage.png'),
+                          ),
+                        ),
+                        child:Image.asset(widget.dataList.data![currentIndex].options![index].image.toString(),
+                          width: isTab?115:70.0,
+                          height: isTab?MediaQuery.sizeOf(context).height*.23:106.0,
+                        ),
+                      ),
+                  ),
                 ),
               );
             },

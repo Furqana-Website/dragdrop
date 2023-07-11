@@ -109,9 +109,9 @@ class TwoRowsWithCards extends State<RememberNewScreen>
   void dispose() {
     soundPlayer.stopPlayer();
     soundPlayer.closeAudioSession();
-    super.dispose();
     _controller.dispose();
     super.dispose();
+
   }
 
   void restartTimer() {
