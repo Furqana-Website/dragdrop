@@ -1,0 +1,115 @@
+{
+  "data": [
+    {
+      "images":[
+          {
+            "imagePath":"assets/newUi/fish.png",
+             "isCorrect": false
+          }, {
+            "imagePath":"assets/newUi/plain.png",
+             "isCorrect": false
+          }, {
+            "imagePath":"assets/newUi/car.png",
+             "isCorrect": false
+
+        }, {
+          "imagePath":"assets/newUi/car.png",
+          "isCorrect": false
+        }, {
+          "imagePath":"assets/newUi/car.png",
+          "isCorrect": false
+        }
+      ],
+      "level": 1,
+      "options": [
+        "assets/newUi/plain.png",
+        "assets/newUi/car.png",
+        "assets/newUi/fish.png",
+        "assets/newUi/bus.png",
+        "assets/newUi/yes.png",
+        "assets/newUi/yes.png"
+      ]
+    },
+    {
+      "images":[
+        {
+          "imagePath":"assets/newUi/car.png",
+          "isCorrect": false
+        }, {
+          "imagePath":"assets/newUi/plain.png",
+          "isCorrect": false
+        }, {
+          "imagePath":"assets/newUi/fish.png",
+          "isCorrect": false
+        }
+      ],
+      "level": 2,
+      "options": [
+        "assets/newUi/plain.png",
+        "assets/newUi/car.png",
+        "assets/newUi/fish.png",
+        "assets/newUi/bus.png",
+        "assets/newUi/yes.png"
+      ]
+    },
+
+    {
+      "images":[
+        {
+          "imagePath":"assets/newUi/fish.png",
+          "isCorrect": false
+        }, {
+          "imagePath":"assets/newUi/plain.png",
+          "isCorrect": false
+        }, {
+          "imagePath":"assets/newUi/car.png",
+          "isCorrect": false
+        },
+        {
+          "imagePath":"assets/newUi/car.png",
+          "isCorrect": false
+        }
+      ],
+      "level": 3,
+      "options": [
+        "assets/newUi/plain.png",
+        "assets/newUi/car.png",
+        "assets/newUi/fish.png",
+        "assets/newUi/bus.png",
+        "assets/newUi/car.png"
+      ]
+    },
+    {
+      "images":[
+        {
+          "imagePath":"assets/newUi/car.png",
+          "isCorrect": false
+        }, {
+          "imagePath":"assets/newUi/plain.png",
+          "isCorrect": false
+        }, {
+          "imagePath":"assets/newUi/fish.png",
+          "isCorrect": false
+        },
+        {
+          "imagePath":"assets/newUi/bus.png",
+          "isCorrect": false
+        }, {
+          "imagePath":"assets/newUi/fish.png",
+          "isCorrect": false
+        }
+      ],
+      "level": 4,
+      "options": [
+        "assets/newUi/plain.png",
+        "assets/newUi/car.png",
+        "assets/newUi/fish.png",
+        "assets/newUi/bus.png",
+        "assets/newUi/fish.png",
+        "assets/newUi/bus.png"
+      ]
+    }
+  ]
+}
+
+
