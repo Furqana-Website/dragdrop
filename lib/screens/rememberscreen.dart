@@ -40,7 +40,7 @@ class TwoRowsWithCards extends State<RememberNewScreen>
   void initState() {
     super.initState();
     soundPlayer = FlutterSoundPlayer();
-    // audioService.playAudio('assets/mp3/BG_Music.mp3');
+    audioService.playAudio('assets/mp3/BG_Music.mp3');
     _controller = AnimationController(
       vsync: this,
       duration: Duration(seconds: 10),
