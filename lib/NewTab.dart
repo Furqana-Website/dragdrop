@@ -133,7 +133,7 @@ class _DragAndDropScreenState extends State<DragAndDropScreen> {
       appBar: AppBar(
         title: Text('Drag and Drop Demo'),
       ),
-      body: Row(
+      body: Column(
         children: [
           buildDraggableList(),
           buildDragTargetList(),
@@ -191,9 +191,9 @@ class _DragAndDropScreenState extends State<DragAndDropScreen> {
                 ),
               );
             },
-            // onWillAccept: (data) {
-            //   return !occupiedDestinations.contains(targetList[index]);
-            // },
+            onWillAccept: (data) {
+              return !occupiedDestinations.contains(targetList[index]);
+            },
             onAccept: (data) {
               setState(() {
                 targetList.add(data);

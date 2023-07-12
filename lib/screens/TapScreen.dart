@@ -11,6 +11,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 
 import '../model/Audio.dart';
+import '../model/CorrectAnswerData.dart';
 
 class TapImageScreen extends StatefulWidget {
   GameDataModel dataList;
@@ -27,7 +28,6 @@ class _TapImageScreenState extends State<TapImageScreen> {
   bool isTab=false;
   Map<int, String> caughtImages = {};
   final GameDataModel dataList;
-  bool _isTargetOccupied=false;
   int selectedIndex=-1;
   List<String> occupiedDestinations = [];
 
@@ -37,7 +37,15 @@ class _TapImageScreenState extends State<TapImageScreen> {
   int currentIndex=0;
   List<String> emptyList;
   late FlutterSoundPlayer soundPlayer;
+
   PlayerState audioPlayerState = PlayerState.isStopped;
+  List<CorrectAnswerList> correctAnswerList=[
+    CorrectAnswerList('', 0),
+    CorrectAnswerList('', 0),
+    CorrectAnswerList('', 0),
+    CorrectAnswerList('', 0),
+    CorrectAnswerList('', 0)
+  ];
 
   int length=0;
   int abovelistlength=0;
@@ -46,7 +54,7 @@ class _TapImageScreenState extends State<TapImageScreen> {
   String textContent = 'Hello, Flutter!';
   bool showWinDialog = false;
   bool showTextView = false;
-  List<String> targetList = [];
+  List<String> targetList = ['assets/newUi/tab.png'];
 
   void navigateToNextScreen() {
     int currentdata=currentIndex;
@@ -140,7 +148,6 @@ class _TapImageScreenState extends State<TapImageScreen> {
     isTab=ScreenUtilClass().getIsTab(context);
     print("EmptyData");
     print(emptyList);
-
     return WillPopScope(
 
       onWillPop: () async {
@@ -246,30 +253,35 @@ class _TapImageScreenState extends State<TapImageScreen> {
                       },
                       shrinkWrap: true,
                       scrollDirection: Axis.horizontal,
-                      itemCount: dataList!.data![currentIndex].correctAnswer!.split(",").length,
+                      itemCount: dataList.data![currentIndex].correctAnswer!.split(",").length,
                       itemBuilder: (context, index) {
 
                         return DragTarget<String>(
                           onAccept: (data) {
                             setState(() {
-                              stopAudio();
-                              playAudio("assets/mp3/Click.mp3");
-                              caughtImages[index] = data;
-                              targetList.add(data);
-                              occupiedDestinations.add(targetList[index]);
-                              if(caughtImages[index]==emptyList[index])
-                              {
-                                successCount++;
-                                print("successCount $successCount");
-                              }
-                              else
-                              {
-                                widget.dataList.data![currentIndex].options![count].isError = true;
+                              if(correctAnswerList[index].draggedStatus==0)
+                                {
+                                  caughtImages[index] = data;
+                                  correctAnswerList[index].draggedStatus=1;
+                                  stopAudio();
+                                  playAudio("assets/mp3/Click.mp3");
 
+                                  if(caughtImages[index]==emptyList[index])
+                                  {
+                                    successCount++;
+                                  }
+                                  else
+                                  {
+                                    widget.dataList.data![currentIndex].options![count].isError = true;
+
+                                  }
+                                  widget.dataList.data![currentIndex].options![count].isCorrect = true;
+                                  count++;
+                                }
+                              else{
+                                print("Already Dragged");
                               }
-                              // dataList[currentIndex].options[count].image = image.image;
-                              widget.dataList.data![currentIndex].options![count].isCorrect = true;
-                              count++;
+
                             });
                             if (successCount==widget.dataList.data![currentIndex].correctAnswer!.split(',').length) {
 
@@ -299,9 +311,11 @@ class _TapImageScreenState extends State<TapImageScreen> {
                               playAudio('assets/mp3/Wrong.mp3');
                               isChangeImage=true;
                               showListView = false;
+
                               navigateToCorrectScreen();
 
                             }
+
                           },
                           builder: (
                               BuildContext context,
@@ -319,12 +333,13 @@ class _TapImageScreenState extends State<TapImageScreen> {
                                   decoration:BoxDecoration(
                                     image: DecorationImage(
                                         image: AssetImage(
-                                            caughtImages.containsKey(index)?(widget.dataList.data![currentIndex].correctAnswer!.split(",").length!=count)?'assets/newUi/innerimage.png':
-                                            (count==widget.dataList.data![currentIndex].correctAnswer!.split(",").length&&widget.dataList.data![currentIndex].options![index].isError)?'assets/newUi/wrongimage.png':"assets/newUi/correctimage.png"
-                                                :'assets/newUi/tap.png'
-
+                                            ImageData('assets/newUi/tap.png',index)
                                         ),
-
+                                        // image: AssetImage(
+                                        // caughtImages.containsKey(index)?(widget.dataList.data![currentIndex].correctAnswer!.split(",").length!=count)?'assets/newUi/innerimage.png':
+                                        //     (count==widget.dataList.data![currentIndex].correctAnswer!.split(",").length&&widget.dataList.data![currentIndex].options![index].isError)?'assets/newUi/wrongimage.png':'assets/newUi/correctimage.png'
+                                        //         :'assets/newUi/tap.png'
+                                        // ),
                                         fit: BoxFit.fitWidth
                                     ),
                                   ),
@@ -387,20 +402,17 @@ class _TapImageScreenState extends State<TapImageScreen> {
             itemCount: length,
             itemBuilder: (context, index) {
 
-
               return Center(
                 child: GestureDetector(
                   onTap: ()
                   {
-                    print("Onclick $index");
                   },
                   child: Draggable<String>(
-
                       data: widget.dataList.data![currentIndex].options![index].image.toString(),
                       onDraggableCanceled: (velocity, offset) {
 
                       },
-                      feedback: Container(
+                      feedback:Container(
                         margin: EdgeInsets.only(left: 25),
                         alignment: Alignment.center,
                         width:130,
@@ -424,7 +436,8 @@ class _TapImageScreenState extends State<TapImageScreen> {
                           ),
                         ),
                       ),
-                      childWhenDragging: Container(),
+                      childWhenDragging: Container(
+                      ),
                       child:Container(
                         padding: EdgeInsets.all(20),
                         margin: EdgeInsets.only(left: 25),
@@ -509,4 +522,55 @@ class _TapImageScreenState extends State<TapImageScreen> {
 
 
   }
+
+
+  checkData(int index) {
+    if(caughtImages[index]==widget.dataList.data![currentIndex].options![index].image.toString())
+      {
+        print("Do not feedback");
+      }
+    else{
+      print("feedback Data to up");
+    }
+
+  }
+
+  String ImageData(String s, int index) {
+    if(caughtImages[index]==widget.dataList.data![currentIndex].options![index].image.toString())
+    {
+      print("Do not feedback");
+    }
+    else{
+      print("feedback Data to up");
+    }
+    if(caughtImages.containsKey(index)) {
+      if (widget.dataList.data![currentIndex]
+          .correctAnswer!
+          .split(",")
+          .length != count) {
+        return "assets/newUi/innerimage.png";
+      }
+      else if ((count == widget.dataList.data![currentIndex]
+          .correctAnswer!
+          .split(",")
+          .length &&
+          widget.dataList.data![currentIndex].options![index].isError)) {
+        return "assets/newUi/wrongimage.png";
+      }
+      else
+        return "assets/newUi/correctimage.png";
+    }
+    else{
+      return s;
+    }
+    
+      
+  }
+
+
 }
+
+
+
+
+
